@@ -301,7 +301,7 @@
     "character": "Hero / party lines",
     "id": 30,
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "japanese": "ここからが本番だ",
@@ -310,7 +310,7 @@
     "game": "Monster Hunter series",
     "character": "Guild Handler lines",
     "id": 31,
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
