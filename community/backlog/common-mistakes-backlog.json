@@ -671,7 +671,7 @@
     "explanation": "い-adjectives do not take だ in plain present. (Pattern set 5)",
     "id": 84,
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "wrong": "先生は私を日本語を教えました。",
@@ -687,7 +687,7 @@
     "explanation": "で marks location of action. (Pattern set 5)",
     "id": 86,
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "wrong": "私は昨日東京に行きます。",
@@ -695,7 +695,7 @@
     "explanation": "Use past tense for past actions. (Pattern set 5)",
     "id": 87,
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "wrong": "東京は人が多いです、きれいです。",
@@ -759,7 +759,7 @@
     "explanation": "Use に行く for purpose. (Pattern set 5)",
     "id": 95,
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "wrong": "日本語をわかります。",
@@ -767,7 +767,7 @@
     "explanation": "わかる takes が. (Pattern set 5)",
     "id": 96,
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "wrong": "宿題を忘れないよう、メモします。",
@@ -775,14 +775,14 @@
     "explanation": "Use ように for purpose/prevention. (Pattern set 5)",
     "id": 97,
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "wrong": "駅まで十分歩きますかかる。",
     "correct": "駅まで歩いて十分かかる。",
     "explanation": "Use natural collocation and order. (Pattern set 5)",
     "id": 98,
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
