@@ -1299,7 +1299,9 @@
     "mainColor": "oklch(78.0% 0.220 330.0 / 1)",
     "secondaryColor": "oklch(85.0% 0.175 190.0 / 1)",
     "issued": false,
-    "completed": false
+    "completed": true,
+    "completedBy": "sachin-dul",
+    "completedPR": 9097
   },
   {
     "id": "ginger-koi",
