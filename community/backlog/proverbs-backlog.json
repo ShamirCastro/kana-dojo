@@ -5,7 +5,7 @@
     "romaji": "Isseki nichou",
     "english": "One stone, two birds",
     "meaning": "Accomplishing two things with one action",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -15,7 +15,7 @@
     "english": "Dumplings over flowers",
     "meaning": "Practical things are more valuable than aesthetic ones",
     "completed": false,
-    "issued": false
+    "issued": true
   },
   {
     "id": 3,
@@ -1553,7 +1553,7 @@
     "romaji": "Nen ni wa nen wo ireyo",
     "english": "Put care into care",
     "meaning": "Double-check everything",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1563,7 +1563,7 @@
     "english": "A day feels like a thousand autumns",
     "meaning": "Waiting makes time feel long",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 175,
@@ -1571,7 +1571,7 @@
     "romaji": "Hana wa sakuragi hito wa bushi",
     "english": "Among flowers, cherry blossoms; among men, warriors",
     "meaning": "The best of each kind",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1580,7 +1580,7 @@
     "romaji": "Mochi wa mochiya",
     "english": "Mochi should be made by the mochi shop",
     "meaning": "Leave it to the experts",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1590,7 +1590,7 @@
     "english": "It’s darkest under the lighthouse",
     "meaning": "The obvious is overlooked",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 178,
@@ -1598,7 +1598,7 @@
     "romaji": "Ki wo mite mori wo mizu",
     "english": "See the trees but not the forest",
     "meaning": "Miss the bigger picture",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1607,7 +1607,7 @@
     "romaji": "Tabi wa michizure yo wa nasake",
     "english": "Travel needs companions; life needs kindness",
     "meaning": "Relationships and compassion matter",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1616,7 +1616,7 @@
     "romaji": "Inu mo arukeba bou ni ataru",
     "english": "Even a walking dog will hit a stick",
     "meaning": "Acting can lead to luck or trouble",
-    "completed": false,
+    "completed": true,
     "issued": false
   }
 ]
