@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react';
 import Return from '@/shared/components/Game/ReturnFromGame';
 import Input from './Input';
-import WordBuildingGame from './WordBuildingGame';
+import MCQ from './MCQ';
+import TilesMode from './TilesMode';
 
 import useVocabStore from '@/features/Vocabulary/store/useVocabStore';
 import { useStatsStore } from '@/features/Progress';
@@ -126,8 +127,19 @@ const Game = () => {
         {showStats && <Stats />}
         <Return isHidden={showStats} gameMode={gameMode} onQuit={handleQuit} />
         {gameMode.toLowerCase() === 'pick' ? (
-          <WordBuildingGame
-            key={`vocab-wordbuilding-${sessionNonce}`}
+          <TilesMode
+            key={`vocab-tiles-${sessionNonce}`}
+            selectedWordObjs={selectedVocabObjs}
+            isHidden={showStats || view !== 'playing'}
+          />
+        ) : gameMode.toLowerCase() === 'mcq' ? (
+          <MCQ
+            selectedWordObjs={selectedVocabObjs}
+            isHidden={showStats || view !== 'playing'}
+          />
+        ) : gameMode.toLowerCase() === 'tiles' ? (
+          <TilesMode
+            key={`vocab-tiles-${sessionNonce}`}
             selectedWordObjs={selectedVocabObjs}
             isHidden={showStats || view !== 'playing'}
           />

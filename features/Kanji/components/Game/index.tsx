@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Return from '@/shared/components/Game/ReturnFromGame';
-import Pick from './Pick';
+import MCQ from './MCQ';
 import Input from './Input';
-import WordBuildingGame from './WordBuildingGame';
+import TilesMode from './TilesMode';
 import useKanjiStore from '@/features/Kanji/store/useKanjiStore';
 import { useStatsStore } from '@/features/Progress';
 import { useShallow } from 'zustand/react/shallow';
@@ -126,7 +126,12 @@ const Game = () => {
         {showStats && <Stats />}
         <Return isHidden={showStats} gameMode={gameMode} onQuit={handleQuit} />
         {gameMode.toLowerCase() === 'pick' ? (
-          <Pick
+          <TilesMode
+            selectedKanjiObjs={selectedKanjiObjs}
+            isHidden={showStats || view !== 'playing'}
+          />
+        ) : gameMode.toLowerCase() === 'mcq' ? (
+          <MCQ
             selectedKanjiObjs={selectedKanjiObjs}
             isHidden={showStats || view !== 'playing'}
           />
@@ -141,9 +146,10 @@ const Game = () => {
             isHidden={showStats || view !== 'playing'}
             isReverse={true}
           />
-        ) : gameMode.toLowerCase() === 'word-building' ? (
-          <WordBuildingGame
-            key={`kanji-wordbuilding-${sessionNonce}`}
+        ) : gameMode.toLowerCase() === 'word-building' ||
+          gameMode.toLowerCase() === 'tiles' ? (
+          <TilesMode
+            key={`kanji-tiles-${sessionNonce}`}
             selectedKanjiObjs={selectedKanjiObjs}
             isHidden={showStats || view !== 'playing'}
           />

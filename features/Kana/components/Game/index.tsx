@@ -2,8 +2,9 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import Return from '@/shared/components/Game/ReturnFromGame';
-import Pick from './Pick';
+import MCQ from './MCQ';
 import Input from './Input';
+import TilesMode from './TilesMode';
 import useKanaStore from '@/features/Kana/store/useKanaStore';
 import { useStatsStore } from '@/features/Progress';
 import { useShallow } from 'zustand/react/shallow';
@@ -126,7 +127,11 @@ const Game = () => {
         {showStats && <Stats />}
         <Return isHidden={showStats} gameMode={gameMode} onQuit={handleQuit} />
         {gameMode.toLowerCase() === 'pick' ? (
-          <Pick isHidden={showStats || view !== 'playing'} />
+          <TilesMode isHidden={showStats || view !== 'playing'} />
+        ) : gameMode.toLowerCase() === 'mcq' ? (
+          <MCQ isHidden={showStats || view !== 'playing'} />
+        ) : gameMode.toLowerCase() === 'tiles' ? (
+          <TilesMode isHidden={showStats || view !== 'playing'} />
         ) : gameMode.toLowerCase() === 'type' ? (
           <Input isHidden={showStats || view !== 'playing'} />
         ) : gameMode.toLowerCase() === 'anti-type' ? (

@@ -1,19 +1,20 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Random } from 'random-js';
+import useClassicSessionStore from '@/shared/store/useClassicSessionStore';
 
 const random = new Random();
 
-interface WordBuildingModeOptions {
-  /** Base probability of word building mode (default: 0.15 = 15%) */
+interface TilesModeOptions {
+  /** Base probability of tiles mode (default: 0.15 = 15%) */
   baseProbability?: number;
-  /** Absolute probability of normal direction when word building starts (0.0-1.0, default: 0.5) */
+  /** Absolute probability of normal direction when tiles mode starts (0.0-1.0, default: 0.5) */
   normalModeProbability?: number;
   /** Probability increase per consecutive correct answer (default: 0.1 = 10%) */
   incrementPerCorrect?: number;
   /** Maximum probability cap (default: 0.4 = 40%) */
   maxProbability?: number;
-  /** Minimum consecutive correct answers needed before word building can trigger (default: 3) */
+  /** Minimum consecutive correct answers needed before tiles mode can trigger (default: 3) */
   minConsecutiveForTrigger?: number;
   /** Number of characters in the word (default: 3) */
   wordLength?: number;
@@ -23,19 +24,19 @@ interface WordBuildingModeOptions {
   minWordLength?: number;
   /** Maximum adaptive word length (default: 3) */
   maxWordLength?: number;
-  /** Minimum consecutive correct answers in word building before switching back (default: 2) */
-  minWordBuildingStreak?: number;
+  /** Minimum consecutive correct answers in tiles mode before switching back (default: 2) */
+  minTilesModeStreak?: number;
 }
 
-interface WordBuildingModeState {
-  /** Whether word building mode is currently active */
-  isWordBuildingMode: boolean;
-  /** Whether the word building mode uses reverse direction (romaji display → kana tiles) */
-  isWordBuildingReverse: boolean;
+interface TilesModeState {
+  /** Whether tiles mode is currently active */
+  isTilesMode: boolean;
+  /** Whether the tiles mode uses reverse direction (romaji display -> kana tiles) */
+  isTilesReverse: boolean;
   /** Consecutive correct answers in current mode */
   consecutiveCorrect: number;
-  /** Consecutive correct answers while in word building mode */
-  wordBuildingStreak: number;
+  /** Consecutive correct answers while in tiles mode */
+  tilesModeStreak: number;
   /** Current word length */
   wordLength: number;
   /** Smoothed learner performance score in range [0, 1] */
@@ -44,24 +45,49 @@ interface WordBuildingModeState {
   consecutiveWrong: number;
 }
 
+const clamp = (value: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, value));
+
+const createInitialTilesModeState = ({
+  enableAdaptiveWordLength,
+  minWordLength,
+  maxWordLength,
+  initialWordLength,
+}: {
+  enableAdaptiveWordLength: boolean;
+  minWordLength: number;
+  maxWordLength: number;
+  initialWordLength: number;
+}): TilesModeState => ({
+  isTilesMode: false,
+  isTilesReverse: false,
+  consecutiveCorrect: 0,
+  tilesModeStreak: 0,
+  wordLength: enableAdaptiveWordLength
+    ? minWordLength
+    : clamp(initialWordLength, minWordLength, maxWordLength),
+  performanceScore: 0,
+  consecutiveWrong: 0,
+});
+
 /**
- * Smart algorithm to decide when to trigger word building mode in pick games.
- * Uses a weighted probability that increases word building chance as user improves.
+ * Smart algorithm to decide when to trigger tiles mode in MCQ games.
+ * Uses a weighted probability that increases tiles-mode chance as the learner improves.
  *
- * Word Building Mode has 2 flavors:
+ * Tiles mode has 2 flavors:
  * - Normal: Multiple kana chars displayed, user selects romaji tiles
  * - Reverse: Multiple romaji chars displayed, user selects kana tiles
  *
- * - Base probability starts at 15%
- * - Increases by 10% for each consecutive correct answer
- * - Caps at 40% word building probability
+  * - Base probability starts at 15%
+  * - Increases by 10% for each consecutive correct answer
+ * - Caps at 40% tiles-mode probability
  * - Requires minimum 3 consecutive correct answers before it can trigger
- * - After 2 correct answers in word building mode, may switch back to normal pick
+ * - After 2 correct answers in tiles mode, may switch back to normal MCQ
  * - Direction is decided from one explicit probability value:
  *   normalModeProbability = chance of normal mode
  *   reverse chance = 1 - normalModeProbability
  */
-export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
+export const useTilesMode = (options: TilesModeOptions = {}) => {
   const {
     baseProbability = 0.15,
     normalModeProbability = 0.65,
@@ -72,8 +98,9 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
     enableAdaptiveWordLength = false,
     minWordLength = 1,
     maxWordLength = 3,
-    minWordBuildingStreak = 2,
+    minTilesModeStreak = 2,
   } = options;
+  const activeSessionId = useClassicSessionStore(state => state.activeSessionId);
 
   const clampedMinWordLength = Math.max(1, minWordLength);
   const clampedMaxWordLength = Math.max(clampedMinWordLength, maxWordLength);
@@ -125,27 +152,34 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
     [clampedMaxWordLength, clampedMinWordLength],
   );
 
-  const [state, setState] = useState<WordBuildingModeState>({
-    isWordBuildingMode: false,
-    isWordBuildingReverse: false,
-    consecutiveCorrect: 0,
-    wordBuildingStreak: 0,
-    wordLength: enableAdaptiveWordLength
-      ? clampedMinWordLength
-      : Math.max(
-          clampedMinWordLength,
-          Math.min(clampedMaxWordLength, initialWordLength),
-        ),
-    performanceScore: 0,
-    consecutiveWrong: 0,
-  });
+  const initialState = useMemo(
+    () =>
+      createInitialTilesModeState({
+        enableAdaptiveWordLength,
+        minWordLength: clampedMinWordLength,
+        maxWordLength: clampedMaxWordLength,
+        initialWordLength,
+      }),
+    [
+      clampedMaxWordLength,
+      clampedMinWordLength,
+      enableAdaptiveWordLength,
+      initialWordLength,
+    ],
+  );
+
+  const [state, setState] = useState<TilesModeState>(initialState);
+
+  useEffect(() => {
+    setState(initialState);
+  }, [activeSessionId, initialState]);
 
   // Call this on wrong answers to reset the streak without changing mode
   const recordWrongAnswer = useCallback(() => {
     setState(prev => ({
       ...prev,
       consecutiveCorrect: 0,
-      wordBuildingStreak: 0,
+      tilesModeStreak: 0,
       consecutiveWrong: prev.consecutiveWrong + 1,
       performanceScore: Math.max(
         0,
@@ -177,13 +211,13 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
       const newConsecutive = prev.consecutiveCorrect + 1;
       const newConsecutiveWrong = 0;
       const performanceGain =
-        (prev.isWordBuildingMode ? 0.14 : 0.08) + (newConsecutive >= 5 ? 0.04 : 0);
+        (prev.isTilesMode ? 0.14 : 0.08) + (newConsecutive >= 5 ? 0.04 : 0);
       const newPerformanceScore = Math.min(
         1,
         prev.performanceScore + performanceGain,
       );
-      const newWordBuildingStreak = prev.isWordBuildingMode
-        ? prev.wordBuildingStreak + 1
+      const newTilesModeStreak = prev.isTilesMode
+        ? prev.tilesModeStreak + 1
         : 0;
       const newWordLength = enableAdaptiveWordLength
         ? getAdaptiveWordLength(
@@ -194,19 +228,19 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
           )
         : prev.wordLength;
 
-      // If currently in word building mode, check if we should exit
-      if (prev.isWordBuildingMode) {
-        // After minWordBuildingStreak correct in word building, 50% chance to exit
+      // If currently in tiles mode, check if we should exit
+      if (prev.isTilesMode) {
+        // After minTilesModeStreak correct in tiles mode, 50% chance to exit
         if (
-          newWordBuildingStreak >= minWordBuildingStreak &&
+          newTilesModeStreak >= minTilesModeStreak &&
           random.real(0, 1) < 0.5
         ) {
           return {
             ...prev,
-            isWordBuildingMode: false,
-            isWordBuildingReverse: false,
+            isTilesMode: false,
+            isTilesReverse: false,
             consecutiveCorrect: newConsecutive,
-            wordBuildingStreak: 0,
+            tilesModeStreak: 0,
             consecutiveWrong: newConsecutiveWrong,
             performanceScore: newPerformanceScore,
             wordLength: newWordLength,
@@ -215,32 +249,31 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
         return {
           ...prev,
           consecutiveCorrect: newConsecutive,
-          wordBuildingStreak: newWordBuildingStreak,
+          tilesModeStreak: newTilesModeStreak,
           consecutiveWrong: newConsecutiveWrong,
           performanceScore: newPerformanceScore,
           wordLength: newWordLength,
         };
       }
 
-      // Check if we should enter word building mode
+      // Check if we should enter tiles mode
       if (newConsecutive >= minConsecutiveForTrigger) {
-        const wordBuildingProbability = Math.min(
+        const tilesModeProbability = Math.min(
           baseProbability +
             (newConsecutive - minConsecutiveForTrigger) * incrementPerCorrect,
           maxProbability,
         );
 
-        if (random.real(0, 1) < wordBuildingProbability) {
-          // Enter word building mode using one explicit probability:
+        if (random.real(0, 1) < tilesModeProbability) {
+          // Enter tiles mode using one explicit probability:
           // normal = clampedNormalModeProbability
           // reverse = 1 - clampedNormalModeProbability
           return {
             ...prev,
-            isWordBuildingMode: true,
-            isWordBuildingReverse:
-              random.real(0, 1) >= clampedNormalModeProbability,
+            isTilesMode: true,
+            isTilesReverse: random.real(0, 1) >= clampedNormalModeProbability,
             consecutiveCorrect: newConsecutive,
-            wordBuildingStreak: 0,
+            tilesModeStreak: 0,
             consecutiveWrong: newConsecutiveWrong,
             performanceScore: newPerformanceScore,
             wordLength: newWordLength,
@@ -248,7 +281,7 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
         }
       }
 
-      // Stay in normal pick mode
+      // Stay in normal MCQ mode
       return {
         ...prev,
         consecutiveCorrect: newConsecutive,
@@ -265,16 +298,16 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
     incrementPerCorrect,
     maxProbability,
     minConsecutiveForTrigger,
-    minWordBuildingStreak,
+    minTilesModeStreak,
   ]);
 
-  // Force exit word building mode (e.g., when question pool is too small)
-  const exitWordBuildingMode = useCallback(() => {
+  // Force exit tiles mode (e.g., when question pool is too small)
+  const exitTilesMode = useCallback(() => {
     setState(prev => ({
       ...prev,
-      isWordBuildingMode: false,
-      isWordBuildingReverse: false,
-      wordBuildingStreak: 0,
+      isTilesMode: false,
+      isTilesReverse: false,
+      tilesModeStreak: 0,
     }));
   }, []);
 
@@ -282,21 +315,21 @@ export const useWordBuildingMode = (options: WordBuildingModeOptions = {}) => {
   const setWordLength = useCallback((length: number) => {
     setState(prev => ({
       ...prev,
-      wordLength: Math.max(clampedMinWordLength, Math.min(clampedMaxWordLength, length)),
+      wordLength: clamp(length, clampedMinWordLength, clampedMaxWordLength),
     }));
   }, [clampedMaxWordLength, clampedMinWordLength]);
 
   return {
-    isWordBuildingMode: state.isWordBuildingMode,
-    isWordBuildingReverse: state.isWordBuildingReverse,
+    isTilesMode: state.isTilesMode,
+    isTilesReverse: state.isTilesReverse,
     wordLength: state.wordLength,
     consecutiveCorrect: state.consecutiveCorrect,
-    wordBuildingStreak: state.wordBuildingStreak,
+    tilesModeStreak: state.tilesModeStreak,
     decideNextMode,
     recordWrongAnswer,
-    exitWordBuildingMode,
+    exitTilesMode,
     setWordLength,
   };
 };
 
-export default useWordBuildingMode;
+export default useTilesMode;

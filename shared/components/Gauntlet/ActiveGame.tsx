@@ -448,7 +448,7 @@ export default function ActiveGame<T>({
   const showContinue = bottomBarState === 'correct';
   const showTryAgain = bottomBarState === 'wrong';
 
-  // Sizing classes based on dojoType (matching exact sizes from each WordBuildingGame)
+  // Sizing classes based on dojoType (matching exact sizes from each TilesMode implementation)
   // Kana: tiles text-2xl sm:text-3xl, question text-7xl sm:text-8xl
   // Kanji: tiles text-3xl/4xl (kanji) or text-xl/2xl (meaning), question text-8xl/9xl
   // Vocab: tiles text-3xl/4xl (japanese) or text-xl/2xl (meaning), question text-6xl/8xl
@@ -525,7 +525,7 @@ export default function ActiveGame<T>({
         <ProgressBar value={currentIndex} max={totalQuestions} />
       </div>
 
-      {/* Main Game Area - EXACTLY matching WordBuildingGame */}
+      {/* Main Game Area - EXACTLY matching the TilesMode implementations */}
       <div className='mt-8 flex w-full flex-col items-center gap-6 sm:mt-12 sm:w-4/5 sm:gap-10'>
         <AnimatePresence mode='wait'>
           <motion.div

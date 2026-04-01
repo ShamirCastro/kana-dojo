@@ -24,6 +24,9 @@ const GAME_MODE_ICONS: Record<
   { icon: LucideIcon; className?: string }
 > = {
   pick: { icon: MousePointerClick },
+  mcq: { icon: MousePointerClick },
+  'reverse-mcq': { icon: MousePointerClick, className: 'scale-x-[-1]' },
+  // Legacy compatibility alias for older persisted/internal mode values.
   'anti-pick': { icon: MousePointerClick, className: 'scale-x-[-1]' },
   type: { icon: Keyboard },
   'anti-type': { icon: Keyboard, className: 'scale-y-[-1]' },
