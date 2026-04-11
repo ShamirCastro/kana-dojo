@@ -671,7 +671,7 @@
     ],
     "correctIndex": 0,
     "completed": false,
-    "issued": false,
+    "issued": true,
     "completedBy": "VDnoob",
     "completedPR": 12729
   },
