@@ -10,7 +10,6 @@ import { cn } from '@/shared/utils/utils';
 const Decorations = lazy(
   () => import('@/shared/ui-composite/Decorations/Decorations'),
 );
-const USE_DECORATIONS_BACKGROUND = true;
 
 interface StreakMilestoneOverlayProps {
   milestone: number | null;
@@ -147,13 +146,11 @@ export default function StreakMilestoneOverlay({
           aria-modal='true'
           aria-label={`${milestone} in a row`}
         >
-          {USE_DECORATIONS_BACKGROUND && (
-            <div className='absolute inset-0 -z-10'>
-              <Suspense fallback={<></>}>
-                <Decorations expandDecorations={false} interactive={false} />
-              </Suspense>
-            </div>
-          )}
+          <div className='absolute inset-0 -z-10'>
+            <Suspense fallback={<></>}>
+              <Decorations expandDecorations={false} interactive={false} />
+            </Suspense>
+          </div>
 
           {/* Main Content */}
           <motion.div

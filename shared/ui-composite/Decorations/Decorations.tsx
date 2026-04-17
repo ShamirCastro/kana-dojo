@@ -71,6 +71,8 @@ const GRID_COL_CLASSES =
   'grid-cols-9 sm:grid-cols-12 md:grid-cols-16 lg:grid-cols-22 xl:grid-cols-28';
 const CHAR_SIZE_CLASSES =
   'text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl';
+const DIMMED_OPACITY_CLASS = 'opacity-25';
+const USE_DECORATIONS_IN_NON_MAIN_MENU = true;
 
 const getBreakpointKey = (width: number): BreakpointKey => {
   if (width >= 1280) return 'xl';
@@ -335,6 +337,8 @@ const Decorations = ({
   forceShow?: boolean;
   interactive?: boolean;
 }) => {
+  if (!USE_DECORATIONS_IN_NON_MAIN_MENU) return null;
+
   const [styles, setStyles] = useState<CharacterStyle[]>([]);
   const [visibleCount, setVisibleCount] = useState<number>(() =>
     calculateVisibleCount(),
@@ -452,7 +456,7 @@ const Decorations = ({
       <div
         className={clsx(
           'fixed inset-0 overflow-hidden',
-          expandDecorations ? 'opacity-100' : 'opacity-30',
+          expandDecorations ? 'opacity-100' : DIMMED_OPACITY_CLASS,
           interactive ? 'pointer-events-auto' : 'pointer-events-none',
         )}
       >

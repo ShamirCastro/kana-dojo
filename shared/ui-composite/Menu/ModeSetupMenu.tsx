@@ -28,7 +28,6 @@ import {
 import { ActionButton } from '@/shared/ui/components/ActionButton';
 
 const Decorations = lazy(() => import('@/shared/ui-composite/Decorations/Decorations'));
-const USE_DECORATIONS_BACKGROUND = true;
 
 interface ModeSetupMenuProps {
   isOpen: boolean;
@@ -239,18 +238,12 @@ const ModeSetupMenu = ({
 
   return (
     <div className='fixed inset-0 z-[70]'>
-      {USE_DECORATIONS_BACKGROUND ? (
-        <>
-          <div className='absolute inset-0 -z-20 bg-(--background-color)' />
-          <div className='absolute inset-0 -z-10'>
-            <Suspense fallback={<></>}>
-              <Decorations expandDecorations={false} interactive={true} />
-            </Suspense>
-          </div>
-        </>
-      ) : (
-        <div className='absolute inset-0 bg-(--background-color)' />
-      )}
+      <div className='absolute inset-0 -z-20 bg-(--background-color)' />
+      <div className='absolute inset-0 -z-10'>
+        <Suspense fallback={<></>}>
+          <Decorations expandDecorations={false} interactive={true} />
+        </Suspense>
+      </div>
       <div className='h-full w-full overflow-x-hidden overflow-y-auto overscroll-y-contain'>
         <div className='mx-auto flex min-h-[100dvh] w-full max-w-lg flex-col justify-center p-4'>
           <div className='w-full space-y-4'>
